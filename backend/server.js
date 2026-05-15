@@ -6,14 +6,7 @@ require("dotenv").config();
 const app = express();
 
 // Middleware
-const corsOptions = {
-  origin: [
-    "https://team-task-manager-kaj8.vercel.app",
-  ],
-  credentials: true,
-};
-
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json());
 
 // Routes
@@ -32,9 +25,10 @@ app.use("/api/projects", projectRoutes);
 app.use("/api/tasks", taskRoutes);
 
 // MongoDB Connection
-mongoose.connect(process.env.MONGO_URI)
-.then(() => console.log("MongoDB Connected"))
-.catch((err) => console.log(err));
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("MongoDB Connected"))
+  .catch((err) => console.log(err));
 
 const PORT = process.env.PORT || 5000;
 
