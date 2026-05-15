@@ -7,9 +7,17 @@ const signup = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
 
-    if (!name || !email || !password || !role) {
+    if (!name || !email || !password) {
       return res.status(400).json({
-        message: "All fields are required",
+        message: "Name, email and password are required",
+      });
+    }
+
+    const normalizedRole = role ? role.toLowerCase() : "member";
+
+    if (!["admin", "member"].includes(normalizedRole)) {
+      return res.status(400).json({
+        message: "Invalid role. Role must be admin or member",
       });
     }
 
@@ -27,12 +35,17 @@ const signup = async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      role: role.toLowerCase(),
+      role: normalizedRole,
     });
 
     res.status(201).json({
       message: "User Registered Successfully",
-      user,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
     });
   } catch (error) {
     console.error("SIGNUP ERROR:", error);
@@ -80,10 +93,16 @@ const login = async (req, res) => {
       }
     );
 
-    res.json({
+    res.status(200).json({
       message: "Login Successful",
       token,
       role: user.role,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
     });
   } catch (error) {
     console.error("LOGIN ERROR:", error);
