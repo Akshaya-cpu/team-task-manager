@@ -5,6 +5,7 @@ import "./App.css";
 const API_URL =
   import.meta.env.VITE_API_URL ||
   "https://team-task-manager-production-ca3f.up.railway.app/api";
+
 function App() {
   const [name, setName] = useState("");
   const [role, setRole] = useState("member");
@@ -30,9 +31,7 @@ function App() {
     "Welcome to Team Task Manager!",
   ]);
 
-  const [activityLogs, setActivityLogs] = useState([
-    "Application opened",
-  ]);
+  const [activityLogs, setActivityLogs] = useState(["Application opened"]);
 
   const [chatOpen, setChatOpen] = useState(false);
   const [inputMessage, setInputMessage] = useState("");
@@ -44,8 +43,12 @@ function App() {
   const userRole = (localStorage.getItem("role") || role)?.toLowerCase();
 
   const totalTasks = tasks.length;
-  const completedTasks = tasks.filter((task) => task.status === "Completed").length;
-  const pendingTasks = tasks.filter((task) => task.status === "Pending").length;
+  const completedTasks = tasks.filter(
+    (task) => task.status === "Completed"
+  ).length;
+  const pendingTasks = tasks.filter(
+    (task) => task.status === "Pending"
+  ).length;
 
   const overdueTasks = tasks.filter(
     (task) =>
@@ -156,17 +159,6 @@ function App() {
         alert("Please enter task title and description");
         return;
       }
-      const corsOptions = {
-  origin: [
-    "http://localhost:5173",
-    "http://localhost:5174",
-    "https://team-task-manager-kaj8.vercel.app",
-    "https://team-task-manager-kaj8-ya4j4fixf-akshaya-s-projects4.vercel.app",
-  ],
-  credentials: true,
-};
-
-app.use(cors(corsOptions));
 
       const token = localStorage.getItem("token");
 
@@ -207,9 +199,7 @@ app.use(cors(corsOptions));
 
       await axios.put(
         `${API_URL}/tasks/${id}`,
-        {
-          status: "Completed",
-        },
+        { status: "Completed" },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -220,7 +210,7 @@ app.use(cors(corsOptions));
       alert("Task Updated");
 
       addNotification("Task marked as completed");
-      addActivity(`Task status updated to Completed`);
+      addActivity("Task status updated to Completed");
 
       fetchTasks();
     } catch (error) {
@@ -259,17 +249,17 @@ app.use(cors(corsOptions));
     if (msg.includes("profile")) {
       botReply = "Profile shows your email and role.";
     } else if (msg.includes("notification")) {
-      botReply = "Notifications show important updates like task creation and status changes.";
+      botReply = "Notifications show important updates.";
     } else if (msg.includes("activity")) {
-      botReply = "Activity logs show recent actions performed in the app.";
+      botReply = "Activity logs show recent app actions.";
     } else if (msg.includes("assign")) {
-      botReply = "Admins can assign tasks to members using the Assign Member dropdown.";
+      botReply = "Admins can assign tasks using Assign Member dropdown.";
     } else if (msg.includes("due") || msg.includes("overdue")) {
-      botReply = "Due Date is used to track overdue tasks in the dashboard.";
+      botReply = "Due date helps track overdue tasks.";
     } else if (msg.includes("create")) {
-      botReply = "Admins can create tasks using the Create Task section.";
+      botReply = "Admins can create tasks.";
     } else if (msg.includes("complete") || msg.includes("update")) {
-      botReply = "Click Mark Completed button to update task status.";
+      botReply = "Click Mark Completed to update task status.";
     } else if (msg.includes("dashboard")) {
       botReply = "Dashboard shows total, pending, completed, and overdue tasks.";
     }
@@ -374,10 +364,7 @@ app.use(cors(corsOptions));
       ) : (
         <div>
           <div className="card">
-            <h2>
-              {userRole === "admin" ? "Admin Dashboard" : "Member Dashboard"}
-            </h2>
-
+            <h2>{userRole === "admin" ? "Admin Dashboard" : "Member Dashboard"}</h2>
             <p>Role: {userRole}</p>
 
             <div className="stats">
@@ -479,12 +466,7 @@ app.use(cors(corsOptions));
                   <h3>{task.title}</h3>
                   <p>{task.description}</p>
                   <p>Status: {task.status}</p>
-
-                  <p>
-                    Assigned To:{" "}
-                    {task.assignedTo?.name || "Not Assigned"}
-                  </p>
-
+                  <p>Assigned To: {task.assignedTo?.name || "Not Assigned"}</p>
                   <p>
                     Due Date:{" "}
                     {task.dueDate
