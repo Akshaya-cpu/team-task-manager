@@ -7,20 +7,33 @@ const authRoutes = require("./routes/authRoutes");
 
 const app = express();
 
-app.use(cors());
+// CORS FIX
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 
+// Routes
 app.use("/api/auth", authRoutes);
+
+// Test Route
+app.get("/", (req, res) => {
+  res.send("API Running Successfully");
+});
 
 const PORT = process.env.PORT || 8080;
 
-// MongoDB connect FIRST
+// MongoDB Connection
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
     console.log("MongoDB Connected");
 
-    // start server ONLY after DB connects
+    // Start server ONLY after DB connects
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
