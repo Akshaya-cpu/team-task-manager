@@ -7,7 +7,12 @@ const signup = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
 
-    // check user
+    if (!name || !email || !password || !role) {
+      return res.status(400).json({
+        message: "All fields are required",
+      });
+    }
+
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
@@ -16,23 +21,21 @@ const signup = async (req, res) => {
       });
     }
 
-    // hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // create user
     const user = await User.create({
       name,
       email,
       password: hashedPassword,
-      role,
+      role: role.toLowerCase(),
     });
 
     res.status(201).json({
       message: "User Registered Successfully",
       user,
     });
-
   } catch (error) {
+    console.error("SIGNUP ERROR:", error);
     res.status(500).json({
       message: error.message,
     });
@@ -44,7 +47,12 @@ const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // check user
+    if (!email || !password) {
+      return res.status(400).json({
+        message: "Email and password are required",
+      });
+    }
+
     const user = await User.findOne({ email });
 
     if (!user) {
@@ -53,7 +61,6 @@ const login = async (req, res) => {
       });
     }
 
-    // compare password
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
@@ -62,25 +69,24 @@ const login = async (req, res) => {
       });
     }
 
-    // token
     const token = jwt.sign(
       {
         id: user._id,
         role: user.role,
       },
-      process.env.JWT_SECRET,
+      process.env.JWT_SECRET || "fallback_secret",
       {
         expiresIn: "7d",
       }
     );
 
     res.json({
-  message: "Login Successful",
-  token,
-  role: user.role,
-});
-
+      message: "Login Successful",
+      token,
+      role: user.role,
+    });
   } catch (error) {
+    console.error("LOGIN ERROR:", error);
     res.status(500).json({
       message: error.message,
     });
