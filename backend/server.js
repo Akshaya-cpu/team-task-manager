@@ -6,7 +6,14 @@ require("dotenv").config();
 const app = express();
 
 // Middleware
-app.use(cors());
+const corsOptions = {
+  origin: [
+    "https://team-task-manager-kaj8.vercel.app",
+  ],
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Routes
