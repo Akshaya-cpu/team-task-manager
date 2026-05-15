@@ -10,30 +10,27 @@ const app = express();
 // CORS FIX
 app.use(
   cors({
-    origin: true,
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
 );
 
 app.use(express.json());
 
-// Routes
 app.use("/api/auth", authRoutes);
 
-// Test Route
 app.get("/", (req, res) => {
-  res.send("API Running Successfully");
+  res.send("API Running...");
 });
 
 const PORT = process.env.PORT || 8080;
 
-// MongoDB Connection
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
     console.log("MongoDB Connected");
 
-    // Start server ONLY after DB connects
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
