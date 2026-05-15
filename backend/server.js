@@ -12,7 +12,7 @@ const app = express();
 app.use(cors({
   origin: [
     "https://team-task-manager-kaj8.vercel.app",
-    "https://team-task-manager-kaj8-fqbzncho8-akshaya-s-projects4.vercel.app"
+    "https://team-task-manager-kaj8-q072blbii-akshaya-s-projects4.vercel.app"
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
