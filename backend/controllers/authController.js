@@ -2,22 +2,16 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-// Signup
+// SIGNUP
 const signup = async (req, res) => {
   try {
+    console.log("BODY:", req.body);
+
     const { name, email, password, role } = req.body;
 
-    if (!name || !email || !password) {
+    if (!name || !email || !password || !role) {
       return res.status(400).json({
-        message: "Name, email and password are required",
-      });
-    }
-
-    const normalizedRole = role ? role.toLowerCase() : "member";
-
-    if (!["admin", "member"].includes(normalizedRole)) {
-      return res.status(400).json({
-        message: "Invalid role. Role must be admin or member",
+        message: "All fields are required",
       });
     }
 
@@ -35,34 +29,35 @@ const signup = async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      role: normalizedRole,
+      role: role.toLowerCase(),
     });
 
-    res.status(201).json({
+    return res.status(201).json({
+      success: true,
       message: "User Registered Successfully",
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
+      user,
     });
+
   } catch (error) {
-    console.error("SIGNUP ERROR:", error);
-    res.status(500).json({
+    console.log("SIGNUP ERROR:", error);
+
+    return res.status(500).json({
+      success: false,
       message: error.message,
     });
   }
 };
 
-// Login
+// LOGIN
 const login = async (req, res) => {
   try {
+    console.log("LOGIN BODY:", req.body);
+
     const { email, password } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({
-        message: "Email and password are required",
+        message: "Email and password required",
       });
     }
 
@@ -87,26 +82,23 @@ const login = async (req, res) => {
         id: user._id,
         role: user.role,
       },
-      process.env.JWT_SECRET || "fallback_secret",
+      process.env.JWT_SECRET,
       {
         expiresIn: "7d",
       }
     );
 
-    res.status(200).json({
-      message: "Login Successful",
+    return res.status(200).json({
+      success: true,
       token,
       role: user.role,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
     });
+
   } catch (error) {
-    console.error("LOGIN ERROR:", error);
-    res.status(500).json({
+    console.log("LOGIN ERROR:", error);
+
+    return res.status(500).json({
+      success: false,
       message: error.message,
     });
   }
