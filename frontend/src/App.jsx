@@ -4,7 +4,7 @@ import "./App.css";
 
 const API_URL =
   import.meta.env.VITE_API_URL ||
-  "https://team-task-manager-production-ca3f.up.railway.app/api";
+  "https://team-task-manager-production-b4b4.up.railway.app/api";
 
 function App() {
   const [name, setName] = useState("");
@@ -20,6 +20,7 @@ function App() {
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [projectName, setProjectName] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [assignedTo, setAssignedTo] = useState("");
 
@@ -43,9 +44,11 @@ function App() {
   const userRole = (localStorage.getItem("role") || role)?.toLowerCase();
 
   const totalTasks = tasks.length;
+
   const completedTasks = tasks.filter(
     (task) => task.status === "Completed"
   ).length;
+
   const pendingTasks = tasks.filter(
     (task) => task.status === "Pending"
   ).length;
@@ -155,8 +158,8 @@ function App() {
 
   const createTask = async () => {
     try {
-      if (!title || !description) {
-        alert("Please enter task title and description");
+      if (!title || !description || !projectName) {
+        alert("Please fill task title, description and project name");
         return;
       }
 
@@ -167,6 +170,7 @@ function App() {
         {
           title,
           description,
+          projectName,
           dueDate,
           assignedTo,
         },
@@ -184,6 +188,7 @@ function App() {
 
       setTitle("");
       setDescription("");
+      setProjectName("");
       setDueDate("");
       setAssignedTo("");
 
@@ -242,11 +247,13 @@ function App() {
     };
 
     let botReply =
-      "I can help you with login, register, create task, assign members, due dates, and task updates.";
+      "I can help you with login, register, create task, assign members, project names, due dates, and task updates.";
 
     const msg = inputMessage.toLowerCase();
 
-    if (msg.includes("profile")) {
+    if (msg.includes("project")) {
+      botReply = "Project Name helps group tasks under a project like Frontend UI, Backend API, or Testing.";
+    } else if (msg.includes("profile")) {
       botReply = "Profile shows your email and role.";
     } else if (msg.includes("notification")) {
       botReply = "Notifications show important updates.";
@@ -364,7 +371,10 @@ function App() {
       ) : (
         <div>
           <div className="card">
-            <h2>{userRole === "admin" ? "Admin Dashboard" : "Member Dashboard"}</h2>
+            <h2>
+              {userRole === "admin" ? "Admin Dashboard" : "Member Dashboard"}
+            </h2>
+
             <p>Role: {userRole}</p>
 
             <div className="stats">
@@ -431,6 +441,13 @@ function App() {
               />
 
               <input
+                type="text"
+                placeholder="Project Name"
+                value={projectName}
+                onChange={(e) => setProjectName(e.target.value)}
+              />
+
+              <input
                 type="date"
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
@@ -465,8 +482,10 @@ function App() {
                 <div key={task._id} className="task-card">
                   <h3>{task.title}</h3>
                   <p>{task.description}</p>
+                  <p>Project: {task.projectName || "No Project"}</p>
                   <p>Status: {task.status}</p>
                   <p>Assigned To: {task.assignedTo?.name || "Not Assigned"}</p>
+
                   <p>
                     Due Date:{" "}
                     {task.dueDate
