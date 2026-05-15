@@ -156,6 +156,17 @@ function App() {
         alert("Please enter task title and description");
         return;
       }
+      const corsOptions = {
+  origin: [
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "https://team-task-manager-kaj8.vercel.app",
+    "https://team-task-manager-kaj8-ya4j4fixf-akshaya-s-projects4.vercel.app",
+  ],
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 
       const token = localStorage.getItem("token");
 
